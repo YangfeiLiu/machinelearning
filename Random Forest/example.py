@@ -1,23 +1,29 @@
 #  导入数据
 from sklearn import datasets
 
-mnist = datasets.load_digits()
-X = mnist.data  # [1797, 64] 64个特征
-Y = mnist.target
+# mnist = datasets.load_digits()
+# X = mnist.data  # [1797, 64] 64个特征
+# Y = mnist.target
 
 #  数据处理
 import pandas as pd
 
-# Y = pd.Series(Y).astype('int').astype('category')
-# X = pd.DataFrame(X)
+data = pd.read_csv('E:/machine learning/datasets/wine.csv')
+x = data.drop('Wine', axis=1)
+# x = x.drop(['Nonflavanoid.phenols', 'Proanth'], axis=1)
+y = data['Wine']
+#  数据归一化处理
+for feature in list(x):
+    max_ = x[feature].max()
+    min_ = x[feature].min()
+    x[feature] = x[feature].apply(lambda a: (a - min_) / (max_ - min_))
 
-# print(X.head())
-# print(Y.head())
+y = y.apply(lambda a: max(a, 0))
 
 #  划分训练集和测试集
 from sklearn.model_selection import train_test_split
 
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.3)
+X_train, X_test, Y_train, Y_test = train_test_split(x, y, test_size=0.3)
 
 #  构建分类器
 from sklearn.ensemble import RandomForestClassifier
@@ -44,5 +50,7 @@ sns.barplot(x=feature_importances.index, y=feature_importances)
 plt.xlabel("feature index")
 plt.ylabel("featrue importance")
 plt.title("visualizing feature importance")
-plt.legend()
-plt.show()
+plt.savefig("featrue importance.png")
+# plt.legend()
+# plt.show()
+
